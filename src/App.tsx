@@ -5,6 +5,7 @@ import { LayerCard } from './components/LayerCard';
 import { InterfaceCard } from './components/InterfaceCard';
 import { PerformanceCard } from './components/PerformanceCard';
 import { SolarCellVisualizer } from './components/SolarCellVisualizer';
+import { SpacePredictor } from './components/SpacePredictor';
 import { defaultLayer, defaultInterface, defaultPerformance, IntermediateLayerType } from './types';
 import { Plus, Trash2, Menu, X, FileJson } from 'lucide-react';
 
@@ -152,6 +153,9 @@ export default function App() {
               data={activeSimulation.performance || defaultPerformance()} 
               onChange={data => updateSimulation(activeId, { performance: data })} 
             />
+
+            {/* Space Predictor */}
+            <SpacePredictor simulation={activeSimulation} />
 
             {/* Front Contact */}
             <ContactCard 
