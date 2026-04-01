@@ -63,15 +63,15 @@ export interface Simulation {
 export const defaultFrontContact = (): ContactLayer => ({
   name: '',
   workFunction: '',
-  srvElectron: '1.00E+5',
-  srvHole: '1.00E+7'
+  srvElectron: '1.00E+7',
+  srvHole: '1.00E+5'
 });
 
 export const defaultBackContact = (): ContactLayer => ({
   name: '',
   workFunction: '',
-  srvElectron: '1.00E+7',
-  srvHole: '1.00E+5'
+  srvElectron: '1.00E+5',
+  srvHole: '1.00E+7'
 });
 
 export const defaultLayer = (type: IntermediateLayerType): IntermediateLayer => ({
