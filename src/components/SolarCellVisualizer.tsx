@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Simulation, IntermediateLayerType } from '../types';
-import { Sun } from 'lucide-react';
+import { Sun, Copy, Check } from 'lucide-react';
+import { toBlob } from 'html-to-image';
 
 const getLayerColor = (type: IntermediateLayerType | 'FrontContact' | 'BackContact') => {
   switch (type) {
@@ -17,10 +18,57 @@ const getLayerColor = (type: IntermediateLayerType | 'FrontContact' | 'BackConta
 };
 
 export function SolarCellVisualizer({ simulation }: { simulation: Simulation }) {
+  const visualizerRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!visualizerRef.current) return;
+    
+    try {
+      const blob = await toBlob(visualizerRef.current, {
+        backgroundColor: '#111111',
+        style: {
+          transform: 'scale(1)', // Reset any hover scale effects
+        },
+        filter: (node) => {
+          // Exclude the copy button from the generated image
+          if (node instanceof HTMLElement && node.id === 'copy-button') {
+            return false;
+          }
+          return true;
+        }
+      });
+      
+      if (blob) {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy image', err);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center p-6 bg-gradient-to-b from-yellow-900/10 to-[#111111] border border-gray-800 rounded-lg shadow-lg h-full min-h-[500px]">
+    <div 
+      ref={visualizerRef}
+      className="flex flex-col items-center p-6 bg-gradient-to-b from-yellow-900/10 to-[#111111] border border-gray-800 rounded-lg shadow-lg h-full min-h-[500px] relative"
+    >
       <div className="w-full flex justify-between items-start mb-8">
-        <h3 className="text-lg font-semibold text-gray-200">Device Structure</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg font-semibold text-gray-200">Device Structure</h3>
+          <button 
+            id="copy-button"
+            onClick={handleCopy}
+            className="p-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-md transition-colors flex items-center gap-1.5 text-xs font-medium border border-gray-700"
+            title="Copy figure to clipboard"
+          >
+            {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
         <div className="flex flex-col items-end text-yellow-500">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold tracking-wider">AM1.5G</span>
@@ -45,7 +93,9 @@ export function SolarCellVisualizer({ simulation }: { simulation: Simulation }) 
       </div>
 
       {/* 2D Layer Stack */}
-      <div className="w-full max-w-[280px] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm overflow-hidden border-x border-b border-gray-700 transform transition-transform hover:scale-105 duration-300">
+      <div 
+        className="w-full max-w-[280px] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm overflow-hidden border-x border-b border-gray-700 transform transition-transform hover:scale-105 duration-300 bg-[#111111]"
+      >
         
         {/* Front Contact */}
         <div className={`w-full py-3 px-4 flex flex-col justify-center items-center text-center border-b border-black/20 ${getLayerColor('FrontContact')}`}>
