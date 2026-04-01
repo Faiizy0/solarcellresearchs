@@ -7,7 +7,7 @@ import { PerformanceCard } from './components/PerformanceCard';
 import { SolarCellVisualizer } from './components/SolarCellVisualizer';
 import { SpacePredictor } from './components/SpacePredictor';
 import { defaultLayer, defaultInterface, defaultPerformance, IntermediateLayerType } from './types';
-import { Plus, Trash2, Menu, X, FileJson } from 'lucide-react';
+import { Plus, Trash2, Menu, X, FileJson, Sparkles } from 'lucide-react';
 
 const LAYER_TYPES: IntermediateLayerType[] = [
   'Window', 'Buffer', 'Absorber', 'ETL', 'HTL', 'Interconnection'
@@ -142,6 +142,10 @@ export default function App() {
               className="bg-transparent border-none text-lg font-bold focus:outline-none focus:ring-0 w-64"
               placeholder="Simulation Name"
             />
+          </div>
+          <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
+            <Sparkles size={16} className="text-blue-500" />
+            Solar cells project with the AI model
           </div>
         </header>
 
