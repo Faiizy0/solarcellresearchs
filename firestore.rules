@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: public_simulations
+    // Document ID: {simulationId}
+    // Fields:
+    //   - id: string (required)
+    //   - name: string (required, max 100 chars)
+    //   - frontContact: map (required)
+    //   - backContact: map (required)
+    //   - layers: list (required, max 20 items)
+    //   - interfaces: list (required, max 20 items)
+    //   - performance: map (optional)
+    //   - updatedAt: number (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function isValidContact(contact) {
+      return contact is map &&
+             contact.keys().hasAll(['name', 'workFunction', 'srvElectron', 'srvHole']) &&
+             contact.name is string && contact.name.size() <= 100 &&
+             contact.workFunction is string && contact.workFunction.size() <= 100 &&
+             contact.srvElectron is string && contact.srvElectron.size() <= 100 &&
+             contact.srvHole is string && contact.srvHole.size() <= 100;
+    }
+    
+    function isValidPerformance(perf) {
+      return perf is map &&
+             perf.keys().hasAll(['voc', 'jsc', 'ff', 'pce']) &&
+             perf.voc is string && perf.voc.size() <= 100 &&
+             perf.jsc is string && perf.jsc.size() <= 100 &&
+             perf.ff is string && perf.ff.size() <= 100 &&
+             perf.pce is string && perf.pce.size() <= 100;
+    }
+    
+    function areAllLayersValid(layers) {
+      return layers is list && layers.size() <= 20;
+    }
+    
+    function areAllInterfacesValid(interfaces) {
+      return interfaces is list && interfaces.size() <= 20;
+    }
+    
+    function isValidSimulation() {
+      let data = request.resource.data;
+      return hasRequiredFields(['id', 'name', 'frontContact', 'backContact', 'layers', 'interfaces', 'updatedAt']) &&
+             data.id is string && data.id.size() <= 100 &&
+             data.name is string && data.name.size() <= 100 &&
+             isValidContact(data.frontContact) &&
+             isValidContact(data.backContact) &&
+             areAllLayersValid(data.layers) &&
+             areAllInterfacesValid(data.interfaces) &&
+             (!('performance' in data) || isValidPerformance(data.performance)) &&
+             data.updatedAt is number;
+    }
+    
+    match /public_simulations/{simulationId} {
+      allow read: if true;
+      allow create: if isValidSimulation();
+      allow update: if isValidSimulation() && request.resource.data.id == resource.data.id;
+      allow delete: if true;
+    }
+  }
+}

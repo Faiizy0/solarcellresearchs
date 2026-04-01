@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "ContactLayer": {
+      "title": "ContactLayer",
+      "description": "A contact layer in the solar cell",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "workFunction": { "type": "string" },
+        "srvElectron": { "type": "string" },
+        "srvHole": { "type": "string" }
+      },
+      "required": ["name", "workFunction", "srvElectron", "srvHole"]
+    },
+    "IntermediateLayer": {
+      "title": "IntermediateLayer",
+      "description": "An intermediate layer in the solar cell",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["Window", "Buffer", "Absorber", "ETL", "HTL", "Interconnection"] },
+        "name": { "type": "string" },
+        "thickness": { "type": "string" },
+        "bandgap": { "type": "string" },
+        "electronAffinity": { "type": "string" },
+        "dielectricPermittivity": { "type": "string" },
+        "cbDos": { "type": "string" },
+        "vbDos": { "type": "string" },
+        "eMobility": { "type": "string" },
+        "hMobility": { "type": "string" },
+        "donorDensity": { "type": "string" },
+        "acceptorDensity": { "type": "string" },
+        "defectType": { "type": "string", "enum": ["Neutral", "Donor", "Acceptor", ""] },
+        "energeticDistribution": { "type": "string", "enum": ["Single", "Uniform", "Gau", "CB tail", "VB tail", ""] },
+        "captureE": { "type": "string" },
+        "captureH": { "type": "string" },
+        "energyLevel": { "type": "string" },
+        "defectDensity": { "type": "string" }
+      },
+      "required": ["id", "type", "name", "thickness", "bandgap", "electronAffinity", "dielectricPermittivity", "cbDos", "vbDos", "eMobility", "hMobility", "donorDensity", "acceptorDensity", "defectType", "energeticDistribution", "captureE", "captureH", "energyLevel", "defectDensity"]
+    },
+    "InterfaceDefect": {
+      "title": "InterfaceDefect",
+      "description": "An interface defect in the solar cell",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "defectType": { "type": "string", "enum": ["Neutral", "Donor", "Acceptor", ""] },
+        "energeticDistribution": { "type": "string", "enum": ["Single", "Uniform", "Gau", "CB tail", "VB tail", ""] },
+        "captureE": { "type": "string" },
+        "captureH": { "type": "string" },
+        "energyLevel": { "type": "string" },
+        "defectDensity": { "type": "string" }
+      },
+      "required": ["id", "defectType", "energeticDistribution", "captureE", "captureH", "energyLevel", "defectDensity"]
+    },
+    "Performance": {
+      "title": "Performance",
+      "description": "Performance metrics of the solar cell",
+      "type": "object",
+      "properties": {
+        "voc": { "type": "string" },
+        "jsc": { "type": "string" },
+        "ff": { "type": "string" },
+        "pce": { "type": "string" }
+      },
+      "required": ["voc", "jsc", "ff", "pce"]
+    },
+    "Simulation": {
+      "title": "Simulation",
+      "description": "A solar cell simulation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string", "description": "The ID of the user who owns this simulation" },
+        "name": { "type": "string" },
+        "frontContact": { "$ref": "ContactLayer" },
+        "backContact": { "$ref": "ContactLayer" },
+        "layers": {
+          "type": "array",
+          "items": { "$ref": "IntermediateLayer" }
+        },
+        "interfaces": {
+          "type": "array",
+          "items": { "$ref": "InterfaceDefect" }
+        },
+        "performance": { "$ref": "Performance" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "userId", "name", "frontContact", "backContact", "layers", "interfaces", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}/simulations/{simulationId}": {
+      "schema": { "$ref": "Simulation" },
+      "description": "Simulations owned by a specific user"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "SCAPS Simulation Manager",
+  "description": "Store and manage solar cell simulation data for SCAPS, including layer parameters and interface defects.",
+  "requestFramePermissions": []
+}
